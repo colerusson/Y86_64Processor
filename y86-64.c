@@ -14,10 +14,10 @@ void fetchStage(int *icode, int *ifun, int *rA, int *rB, wordType *valC, wordTyp
     *ifun = firstByte & 0x0f;
     *icode = (firstByte & 0xf0) >> 4;
     if (*icode == NOP) {
-
+        *valP = pcAddress + 1;
     }
     if (*icode == HALT) {
-
+        *valP = pcAddress + 1;
     }
     if (*icode == IRMOVQ) {
 
@@ -185,10 +185,11 @@ void writebackStage(int icode, int rA, int rB, wordType valE, wordType valM) {
 
 void pcUpdateStage(int icode, wordType valC, wordType valP, bool Cnd, wordType valM) {
     if (icode == NOP) {
-
+        setPC(valP);
     }
     if (icode == HALT) {
-
+        setStatus(STAT_HLT);
+        setPC(valP);
     }
     if (icode == IRMOVQ) {
 
