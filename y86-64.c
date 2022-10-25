@@ -6,27 +6,220 @@
 const int MAX_MEM_SIZE  = (1 << 13);
 
 void fetchStage(int *icode, int *ifun, int *rA, int *rB, wordType *valC, wordType *valP) {
+    // valC and valP are placeholders for values
+    // if it is 8 bits instead of 1, use getWord instead of getByte
+    wordType pcAddress = getPC();   // get the address of the PC
+    // grab the first byte from the address
+    byteType firstByte = getByteFromMemory(pcAddress);  // get the first byte of the address
+    *icode = firstByte & 0x0f;
+    *ifun = (firstByte & 0xf0) >> 4;
+    if (*icode == NOP) {
 
+    }
+    if (*icode == HALT) {
+
+    }
+    if (*icode == IRMOVQ) {
+
+    }
+    if (*icode == RRMOVQ) {
+
+    }
+    if (*icode == RMMOVQ) {
+
+    }
+    if (*icode == MRMOVQ) {
+
+    }
+    if (*icode == OPQ) {
+
+    }
+    if (*icode == JXX) {
+
+    }
+    if (*icode == CALL) {
+
+    }
+    if (*icode == RET) {
+
+    }
+    if (*icode == PUSHQ) {
+
+    }
+    if (*icode == POPQ) {
+
+    }
 }
 
 void decodeStage(int icode, int rA, int rB, wordType *valA, wordType *valB) {
+    if (icode == IRMOVQ) {
 
+    }
+    if (icode == RRMOVQ) {
+
+    }
+    if (icode == RMMOVQ) {
+
+    }
+    if (icode == MRMOVQ) {
+
+    }
+    if (icode == OPQ) {
+
+    }
+    if (icode == JXX) {
+
+    }
+    if (icode == CALL) {
+
+    }
+    if (icode == RET) {
+
+    }
+    if (icode == PUSHQ) {
+
+    }
+    if (icode == POPQ) {
+
+    }
 }
 
 void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType valC, wordType *valE, bool *Cnd) {
+    if (icode == IRMOVQ) {
 
+    }
+    if (icode == RRMOVQ) {
+
+    }
+    if (icode == RMMOVQ) {
+
+    }
+    if (icode == MRMOVQ) {
+
+    }
+    if (icode == OPQ) {
+
+    }
+    if (icode == JXX) {
+
+    }
+    if (icode == CALL) {
+
+    }
+    if (icode == RET) {
+
+    }
+    if (icode == PUSHQ) {
+
+    }
+    if (icode == POPQ) {
+
+    }
 }
 
 void memoryStage(int icode, wordType valA, wordType valP, wordType valE, wordType *valM) {
+    if (icode == IRMOVQ) {
 
+    }
+    if (icode == RRMOVQ) {
+
+    }
+    if (icode == RMMOVQ) {
+
+    }
+    if (icode == MRMOVQ) {
+
+    }
+    if (icode == OPQ) {
+
+    }
+    if (icode == JXX) {
+
+    }
+    if (icode == CALL) {
+
+    }
+    if (icode == RET) {
+
+    }
+    if (icode == PUSHQ) {
+
+    }
+    if (icode == POPQ) {
+
+    }
 }
 
 void writebackStage(int icode, int rA, int rB, wordType valE, wordType valM) {
+    if (icode == IRMOVQ) {
 
+    }
+    if (icode == RRMOVQ) {
+
+    }
+    if (icode == RMMOVQ) {
+
+    }
+    if (icode == MRMOVQ) {
+
+    }
+    if (icode == OPQ) {
+
+    }
+    if (icode == JXX) {
+
+    }
+    if (icode == CALL) {
+
+    }
+    if (icode == RET) {
+
+    }
+    if (icode == PUSHQ) {
+
+    }
+    if (icode == POPQ) {
+
+    }
 }
 
 void pcUpdateStage(int icode, wordType valC, wordType valP, bool Cnd, wordType valM) {
+    if (icode == NOP) {
 
+    }
+    if (icode == HALT) {
+
+    }
+    if (icode == IRMOVQ) {
+
+    }
+    if (icode == RRMOVQ) {
+
+    }
+    if (icode == RMMOVQ) {
+
+    }
+    if (icode == MRMOVQ) {
+
+    }
+    if (icode == OPQ) {
+
+    }
+    if (icode == JXX) {
+
+    }
+    if (icode == CALL) {
+
+    }
+    if (icode == RET) {
+
+    }
+    if (icode == PUSHQ) {
+
+    }
+    if (icode == POPQ) {
+
+    }
 }
 
 void stepMachine(int stepMode) {
