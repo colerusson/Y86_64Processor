@@ -11,8 +11,8 @@ void fetchStage(int *icode, int *ifun, int *rA, int *rB, wordType *valC, wordTyp
     wordType pcAddress = getPC();   // get the address of the PC
     // grab the first byte from the address
     byteType firstByte = getByteFromMemory(pcAddress);  // get the first byte of the address
-    *icode = firstByte & 0x0f;
-    *ifun = (firstByte & 0xf0) >> 4;
+    *ifun = firstByte & 0x0f;
+    *icode = (firstByte & 0xf0) >> 4;
     if (*icode == NOP) {
 
     }
