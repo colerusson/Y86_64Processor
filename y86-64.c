@@ -6,10 +6,8 @@
 const int MAX_MEM_SIZE  = (1 << 13);
 
 void fetchStage(int *icode, int *ifun, int *rA, int *rB, wordType *valC, wordType *valP) {
-    // valC and valP are placeholders for values
-    // if it is 8 bits instead of 1, use getWord instead of getByte
-    wordType pcAddress = getPC();   // get the address of the PC
-    byteType firstByte = getByteFromMemory(pcAddress);  // get the first byte of the address
+    wordType pcAddress = getPC();
+    byteType firstByte = getByteFromMemory(pcAddress);
     *ifun = firstByte & 0x0f;
     *icode = (firstByte & 0xf0) >> 4;
     if (*icode == NOP) {
@@ -77,9 +75,6 @@ void fetchStage(int *icode, int *ifun, int *rA, int *rB, wordType *valC, wordTyp
 }
 
 void decodeStage(int icode, int rA, int rB, wordType *valA, wordType *valB) {
-    if (icode == IRMOVQ) {
-
-    }
     if (icode == RRMOVQ) {
         *valA = getRegister(rA);
     }
@@ -93,9 +88,6 @@ void decodeStage(int icode, int rA, int rB, wordType *valA, wordType *valB) {
     if (icode == OPQ) {
         *valA = getRegister(rA);
         *valB = getRegister(rB);
-    }
-    if (icode == JXX) {
-
     }
     if (icode == CALL) {
         *valB = getRegister(RSP);
@@ -131,42 +123,42 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
         if (ifun == ADD) {
             wordType result = valA + valB;
             *valE = result;
-            bool overflowFlag = FALSE;
+            bool overflow = FALSE;
             if (valA > 0 && valB > 0 && result < 0)
-                overflowFlag = TRUE;
+                overflow = TRUE;
             if (valA < 0 && valB < 0 && result > 0)
-                overflowFlag = TRUE;
-            setFlags(result > 0, result == 0, overflowFlag);
+                overflow = TRUE;
+            setFlags(result > 0, result == 0, overflow);
         }
         if (ifun == SUB) {
             wordType result = valA - valB;
             *valE = result;
-            bool overflowFlag = FALSE;
+            bool overflow = FALSE;
             if (valA > 0 && valB > 0 && result < 0)
-                overflowFlag = TRUE;
+                overflow = TRUE;
             if (valA < 0 && valB < 0 && result > 0)
-                overflowFlag = TRUE;
-            setFlags(result > 0, result == 0, overflowFlag);
+                overflow = TRUE;
+            setFlags(result > 0, result == 0, overflow);
         }
         if (ifun == AND) {
             wordType result = valA & valB;
             *valE = result;
-            bool overflowFlag = FALSE;
+            bool overflow = FALSE;
             if (valA > 0 && valB > 0 && result < 0)
-                overflowFlag = TRUE;
+                overflow = TRUE;
             if (valA < 0 && valB < 0 && result > 0)
-                overflowFlag = TRUE;
-            setFlags(result > 0, result == 0, overflowFlag);
+                overflow = TRUE;
+            setFlags(result > 0, result == 0, overflow);
         }
         if (ifun == XOR) {
             wordType result = valA ^ valB;
             *valE = result;
-            bool overflowFlag = FALSE;
+            bool overflow = FALSE;
             if (valA > 0 && valB > 0 && result < 0)
-                overflowFlag = TRUE;
+                overflow = TRUE;
             if (valA < 0 && valB < 0 && result > 0)
-                overflowFlag = TRUE;
-            setFlags(result > 0, result == 0, overflowFlag);
+                overflow = TRUE;
+            setFlags(result > 0, result == 0, overflow);
         }
 
     }
@@ -190,23 +182,11 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
 }
 
 void memoryStage(int icode, wordType valA, wordType valP, wordType valE, wordType *valM) {
-    if (icode == IRMOVQ) {
-
-    }
-    if (icode == RRMOVQ) {
-
-    }
     if (icode == RMMOVQ) {
         setWordInMemory(valE, valA);
     }
     if (icode == MRMOVQ) {
         *valM = getWordFromMemory(valE);
-    }
-    if (icode == OPQ) {
-
-    }
-    if (icode == JXX) {
-
     }
     if (icode == CALL) {
         setWordInMemory(valE, valP);
@@ -229,17 +209,11 @@ void writebackStage(int icode, int rA, int rB, wordType valE, wordType valM) {
     if (icode == RRMOVQ) {
         setRegister(rB, valE);
     }
-    if (icode == RMMOVQ) {
-
-    }
     if (icode == MRMOVQ) {
         setRegister(rA, valM);
     }
     if (icode == OPQ) {
         setRegister(rB, valE);
-    }
-    if (icode == JXX) {
-
     }
     if (icode == CALL) {
         setRegister(RSP, valE);
@@ -280,7 +254,12 @@ void pcUpdateStage(int icode, wordType valC, wordType valP, bool Cnd, wordType v
         setPC(valP);
     }
     if (icode == JXX) {
-
+        if (Cnd == TRUE) {
+            setPC(valC);
+        }
+        else {
+            setPC(valP);
+        }
     }
     if (icode == CALL) {
         setPC(valP);
