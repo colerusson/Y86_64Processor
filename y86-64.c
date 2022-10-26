@@ -298,7 +298,7 @@ void writebackStage(int icode, int rA, int rB, wordType valE, wordType valM) {
         setRegister(rA, valM);
     }
     if (icode == CMOVXX) {
-        if (cmovCnd) {
+        if (cmovCnd == TRUE) {
             setRegister(rB, valE);
         }
     }
