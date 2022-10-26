@@ -123,6 +123,7 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
     if (icode == CMOVXX) {
         *valE = valA;
         cmovCnd = Cond(ifun);
+        *Cnd = Cond(ifun);
     }
 }
 
