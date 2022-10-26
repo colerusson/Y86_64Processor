@@ -32,10 +32,18 @@ void fetchStage(int *icode, int *ifun, int *rA, int *rB, wordType *valC, wordTyp
         *valP = pcAddress + 2;
     }
     if (*icode == RMMOVQ) {
-
+        byteType nextByte = getByteFromMemory(pcAddress + 1);
+        *rB = nextByte & 0x0f;
+        *rA = (nextByte & 0xf0) >> 4;
+        *valC = getWordFromMemory(pcAddress + 2);
+        *valP = pcAddress + 2;
     }
     if (*icode == MRMOVQ) {
-
+        byteType nextByte = getByteFromMemory(pcAddress + 1);
+        *rB = nextByte & 0x0f;
+        *rA = (nextByte & 0xf0) >> 4;
+        *valC = getWordFromMemory(pcAddress + 2);
+        *valP = pcAddress + 2;
     }
     if (*icode == OPQ) {
         byteType nextByte = getByteFromMemory(pcAddress + 1);
@@ -68,10 +76,11 @@ void decodeStage(int icode, int rA, int rB, wordType *valA, wordType *valB) {
         *valA = getRegister(rA);
     }
     if (icode == RMMOVQ) {
-
+        *valA = getRegister(rA);
+        *valB = getRegister(rB);
     }
     if (icode == MRMOVQ) {
-
+        *valB = getRegister(rB);
     }
     if (icode == OPQ) {
         *valA = getRegister(rA);
@@ -102,10 +111,10 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
         *valE = valA;
     }
     if (icode == RMMOVQ) {
-
+        *valE = valB + valC;
     }
     if (icode == MRMOVQ) {
-
+        *valE = valB + valC;
     }
     if (icode == OPQ) {
         if (ifun == ADD) {
@@ -175,10 +184,10 @@ void memoryStage(int icode, wordType valA, wordType valP, wordType valE, wordTyp
 
     }
     if (icode == RMMOVQ) {
-
+        setWordInMemory(valE, valA);
     }
     if (icode == MRMOVQ) {
-
+        *valM = getWordFromMemory(valE);
     }
     if (icode == OPQ) {
 
@@ -211,7 +220,7 @@ void writebackStage(int icode, int rA, int rB, wordType valE, wordType valM) {
 
     }
     if (icode == MRMOVQ) {
-
+        setRegister(rA, valM);
     }
     if (icode == OPQ) {
         setRegister(rB, valE);
@@ -248,10 +257,10 @@ void pcUpdateStage(int icode, wordType valC, wordType valP, bool Cnd, wordType v
         setPC(valP);
     }
     if (icode == RMMOVQ) {
-
+        setPC(valP);
     }
     if (icode == MRMOVQ) {
-
+        setPC(valP);
     }
     if (icode == OPQ) {
         setPC(valP);
