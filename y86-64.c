@@ -5,7 +5,13 @@
 
 const int MAX_MEM_SIZE  = (1 << 13);
 
-bool cmovCnd;
+static bool cmovCnd;
+bool get(void) {
+    return cmovCnd;
+}
+void set(bool val) {
+    cmovCnd = val;
+}
 
 void fetchStage(int *icode, int *ifun, int *rA, int *rB, wordType *valC, wordType *valP) {
     wordType pcAddress = getPC();
@@ -122,8 +128,8 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
     }
     if (icode == CMOVXX) {
         *valE = valA;
-        cmovCnd = Cond(ifun);
         *Cnd = Cond(ifun);
+        set(*Cnd);
     }
 }
 
@@ -157,7 +163,7 @@ void writebackStage(int icode, int rA, int rB, wordType valE, wordType valM) {
         setRegister(rA, valM);
     }
     if (icode == CMOVXX) {
-        if (cmovCnd == TRUE) {
+        if (get() == TRUE) {
             setRegister(rB, valE);
         }
     }
