@@ -124,10 +124,10 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
             wordType result = valB + valA;
             *valE = result;
             bool overflow;
-            if (valA > 0 && valB > 0 && result < 0) {
+            if (valA > 0 && valB > 0 && result <= 0) {
                 overflow = TRUE;
             }
-            else if (valA < 0 && valB < 0 && result > 0) {
+            else if (valA < 0 && valB < 0 && result >= 0) {
                 overflow = TRUE;
             }
             else {
