@@ -4,6 +4,7 @@
 #include "utils.h"
 
 const int MAX_MEM_SIZE  = (1 << 13);
+bool cmovCnd;
 
 void fetchStage(int *icode, int *ifun, int *rA, int *rB, wordType *valC, wordType *valP) {
     wordType pcAddress = getPC();
@@ -72,6 +73,12 @@ void fetchStage(int *icode, int *ifun, int *rA, int *rB, wordType *valC, wordTyp
         *rA = (nextByte >> 4) & 0xf;
         *valP = pcAddress + 2;
     }
+    if (*icode == CMOVXX) {
+        byteType nextByte = getByteFromMemory(pcAddress + 1);
+        *rB = nextByte & 0x0f;
+        *rA = (nextByte >> 4) & 0xf;
+        *valP = pcAddress + 2;
+    }
 }
 
 void decodeStage(int icode, int rA, int rB, wordType *valA, wordType *valB) {
@@ -103,6 +110,9 @@ void decodeStage(int icode, int rA, int rB, wordType *valA, wordType *valB) {
     if (icode == POPQ) {
         *valA = getRegister(RSP);
         *valB = getRegister(RSP);
+    }
+    if (icode == CMOVXX) {
+        *valA = getRegister(rA);
     }
 }
 
@@ -234,6 +244,10 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
     if (icode == POPQ) {
         *valE = valB + 8;
     }
+    if (icode == CMOVXX) {
+        *valE = valA;
+        cmovCnd = Cond(ifun);
+    }
 }
 
 void memoryStage(int icode, wordType valA, wordType valP, wordType valE, wordType *valM) {
@@ -283,6 +297,11 @@ void writebackStage(int icode, int rA, int rB, wordType valE, wordType valM) {
         setRegister(RSP, valE);
         setRegister(rA, valM);
     }
+    if (icode == CMOVXX) {
+        if (cmovCnd) {
+            setRegister(rB, valE);
+        }
+    }
 }
 
 void pcUpdateStage(int icode, wordType valC, wordType valP, bool Cnd, wordType valM) {
@@ -326,6 +345,9 @@ void pcUpdateStage(int icode, wordType valC, wordType valP, bool Cnd, wordType v
         setPC(valP);
     }
     if (icode == POPQ) {
+        setPC(valP);
+    }
+    if (icode == CMOVXX) {
         setPC(valP);
     }
 }
