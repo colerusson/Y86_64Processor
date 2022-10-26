@@ -153,10 +153,10 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
             wordType result = valB - valA;
             *valE = result;
             bool overflow;
-            if (valA > 0 && valB > 0 && result < 0) {
+            if (valB > 0 && valA < 0 && result < 0) {
                 overflow = TRUE;
             }
-            else if (valA < 0 && valB < 0 && result > 0) {
+            else if (valB < 0 && valA > 0 && result > 0) {
                 overflow = TRUE;
             }
             else {
@@ -181,16 +181,6 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
         if (ifun == AND) {
             wordType result = valA & valB;
             *valE = result;
-            bool overflow;
-            if (valA > 0 && valB > 0 && result < 0) {
-                overflow = TRUE;
-            }
-            else if (valA < 0 && valB < 0 && result > 0) {
-                overflow = TRUE;
-            }
-            else {
-                overflow = FALSE;
-            }
             bool zero;
             if (result == 0) {
                 zero = TRUE;
@@ -205,21 +195,11 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
             else {
                 sign = FALSE;
             }
-            setFlags(sign, zero, overflow);
+            setFlags(sign, zero, FALSE);
         }
         if (ifun == XOR) {
             wordType result = valA ^ valB;
             *valE = result;
-            bool overflow;
-            if (valA > 0 && valB > 0 && result < 0) {
-                overflow = TRUE;
-            }
-            else if (valA < 0 && valB < 0 && result > 0) {
-                overflow = TRUE;
-            }
-            else {
-                overflow = FALSE;
-            }
             bool zero;
             if (result == 0) {
                 zero = TRUE;
@@ -234,7 +214,7 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
             else {
                 sign = FALSE;
             }
-            setFlags(sign, zero, overflow);
+            setFlags(sign, zero, FALSE);
         }
     }
     if (icode == JXX) {
