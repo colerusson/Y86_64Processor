@@ -23,7 +23,7 @@ void fetchStage(int *icode, int *ifun, int *rA, int *rB, wordType *valC, wordTyp
         *rB = nextByte & 0x0f;
         *rA = (nextByte & 0xf0) >> 4;
         *valC = getWordFromMemory(pcAddress + 2);
-        *valP = pcAddress + 2;
+        *valP = pcAddress + 10;
     }
     if (*icode == RRMOVQ) {
         byteType nextByte = getByteFromMemory(pcAddress + 1);
@@ -36,14 +36,14 @@ void fetchStage(int *icode, int *ifun, int *rA, int *rB, wordType *valC, wordTyp
         *rB = nextByte & 0x0f;
         *rA = (nextByte & 0xf0) >> 4;
         *valC = getWordFromMemory(pcAddress + 2);
-        *valP = pcAddress + 2;
+        *valP = pcAddress + 10;
     }
     if (*icode == MRMOVQ) {
         byteType nextByte = getByteFromMemory(pcAddress + 1);
         *rB = nextByte & 0x0f;
         *rA = (nextByte & 0xf0) >> 4;
         *valC = getWordFromMemory(pcAddress + 2);
-        *valP = pcAddress + 2;
+        *valP = pcAddress + 10;
     }
     if (*icode == OPQ) {
         byteType nextByte = getByteFromMemory(pcAddress + 1);
@@ -52,19 +52,27 @@ void fetchStage(int *icode, int *ifun, int *rA, int *rB, wordType *valC, wordTyp
         *valP = pcAddress + 2;
     }
     if (*icode == JXX) {
-
+        *valC = getWordFromMemory(pcAddress + 1);
+        *valP = pcAddress + 9;
     }
     if (*icode == CALL) {
-
+        *valC = getWordFromMemory(pcAddress + 1);
+        *valP = pcAddress + 9;
     }
     if (*icode == RET) {
-
+        *valP = pcAddress + 1;
     }
     if (*icode == PUSHQ) {
-
+        byteType nextByte = getByteFromMemory(pcAddress + 1);
+        *rB = nextByte & 0x0f;
+        *rA = (nextByte & 0xf0) >> 4;
+        *valP = pcAddress + 2;
     }
     if (*icode == POPQ) {
-
+        byteType nextByte = getByteFromMemory(pcAddress + 1);
+        *rB = nextByte & 0x0f;
+        *rA = (nextByte & 0xf0) >> 4;
+        *valP = pcAddress + 2;
     }
 }
 
@@ -90,16 +98,19 @@ void decodeStage(int icode, int rA, int rB, wordType *valA, wordType *valB) {
 
     }
     if (icode == CALL) {
-
+        *valB = getRegister(RSP);
     }
     if (icode == RET) {
-
+        *valA = getRegister(RSP);
+        *valB = getRegister(RSP);
     }
     if (icode == PUSHQ) {
-
+        *valA = getRegister(rA);
+        *valB = getRegister(RSP);
     }
     if (icode == POPQ) {
-
+        *valA = getRegister(RSP);
+        *valB = getRegister(RSP);
     }
 }
 
@@ -160,19 +171,21 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
 
     }
     if (icode == JXX) {
-
+        *Cnd = Cond(ifun);
     }
     if (icode == CALL) {
-
+        int negativeEight = -8; // TODO: make sure that this is how you do negative in C
+        *valE = valB + negativeEight;
     }
     if (icode == RET) {
-
+        *valE = valB + 8;
     }
     if (icode == PUSHQ) {
-
+        int negativeEight = -8;
+        *valE = valB + negativeEight;
     }
     if (icode == POPQ) {
-
+        *valE = valB + 8;
     }
 }
 
@@ -196,16 +209,16 @@ void memoryStage(int icode, wordType valA, wordType valP, wordType valE, wordTyp
 
     }
     if (icode == CALL) {
-
+        setWordInMemory(valE, valP);
     }
     if (icode == RET) {
-
+        *valM = getWordFromMemory(valA);
     }
     if (icode == PUSHQ) {
-
+        setWordInMemory(valE, valA);
     }
     if (icode == POPQ) {
-
+        *valM = getWordFromMemory(valA);
     }
 }
 
@@ -229,16 +242,17 @@ void writebackStage(int icode, int rA, int rB, wordType valE, wordType valM) {
 
     }
     if (icode == CALL) {
-
+        setRegister(RSP, valE);
     }
     if (icode == RET) {
-
+        setRegister(RSP, valE);
     }
     if (icode == PUSHQ) {
-
+        setRegister(RSP, valE);
     }
     if (icode == POPQ) {
-
+        setRegister(RSP, valE);
+        setRegister(rA, valM);
     }
 }
 
@@ -269,16 +283,16 @@ void pcUpdateStage(int icode, wordType valC, wordType valP, bool Cnd, wordType v
 
     }
     if (icode == CALL) {
-
+        setPC(valP);
     }
     if (icode == RET) {
-
+        setPC(valP);
     }
     if (icode == PUSHQ) {
-
+        setPC(valP);
     }
     if (icode == POPQ) {
-
+        setPC(valP);
     }
 }
 
