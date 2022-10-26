@@ -160,7 +160,6 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
                 overflow = TRUE;
             setFlags(result > 0, result == 0, overflow);
         }
-
     }
     if (icode == JXX) {
         *Cnd = Cond(ifun);
