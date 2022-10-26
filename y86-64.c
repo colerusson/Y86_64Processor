@@ -19,34 +19,34 @@ void fetchStage(int *icode, int *ifun, int *rA, int *rB, wordType *valC, wordTyp
     if (*icode == IRMOVQ) {
         byteType nextByte = getByteFromMemory(pcAddress + 1);
         *rB = nextByte & 0x0f;
-        *rA = (nextByte & 0xf0) >> 4;
+        *rA = (nextByte >> 4) & 0xf;
         *valC = getWordFromMemory(pcAddress + 2);
         *valP = pcAddress + 10;
     }
     if (*icode == RRMOVQ) {
         byteType nextByte = getByteFromMemory(pcAddress + 1);
         *rB = nextByte & 0x0f;
-        *rA = (nextByte & 0xf0) >> 4;
+        *rA = (nextByte >> 4) & 0xf;
         *valP = pcAddress + 2;
     }
     if (*icode == RMMOVQ) {
         byteType nextByte = getByteFromMemory(pcAddress + 1);
         *rB = nextByte & 0x0f;
-        *rA = (nextByte & 0xf0) >> 4;
+        *rA = (nextByte >> 4) & 0xf;
         *valC = getWordFromMemory(pcAddress + 2);
         *valP = pcAddress + 10;
     }
     if (*icode == MRMOVQ) {
         byteType nextByte = getByteFromMemory(pcAddress + 1);
         *rB = nextByte & 0x0f;
-        *rA = (nextByte & 0xf0) >> 4;
+        *rA = (nextByte >> 4) & 0xf;
         *valC = getWordFromMemory(pcAddress + 2);
         *valP = pcAddress + 10;
     }
     if (*icode == OPQ) {
         byteType nextByte = getByteFromMemory(pcAddress + 1);
         *rB = nextByte & 0x0f;
-        *rA = (nextByte & 0xf0) >> 4;
+        *rA = (nextByte >> 4) & 0xf;
         *valP = pcAddress + 2;
     }
     if (*icode == JXX) {
@@ -63,13 +63,13 @@ void fetchStage(int *icode, int *ifun, int *rA, int *rB, wordType *valC, wordTyp
     if (*icode == PUSHQ) {
         byteType nextByte = getByteFromMemory(pcAddress + 1);
         *rB = nextByte & 0x0f;
-        *rA = (nextByte & 0xf0) >> 4;
+        *rA = (nextByte >> 4) & 0xf;
         *valP = pcAddress + 2;
     }
     if (*icode == POPQ) {
         byteType nextByte = getByteFromMemory(pcAddress + 1);
         *rB = nextByte & 0x0f;
-        *rA = (nextByte & 0xf0) >> 4;
+        *rA = (nextByte >> 4) & 0xf;
         *valP = pcAddress + 2;
     }
 }
@@ -123,12 +123,15 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
         if (ifun == ADD) {
             wordType result = valB + valA;
             *valE = result;
-            bool overflow = FALSE;
+            bool overflow;
             if (valA > 0 && valB > 0 && result < 0) {
                 overflow = TRUE;
             }
-            if (valA < 0 && valB < 0 && result > 0) {
+            else if (valA < 0 && valB < 0 && result > 0) {
                 overflow = TRUE;
+            }
+            else {
+                overflow = FALSE;
             }
             bool zero;
             if (result == 0) {
@@ -149,12 +152,15 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
         if (ifun == SUB) {
             wordType result = valB - valA;
             *valE = result;
-            bool overflow = FALSE;
+            bool overflow;
             if (valA > 0 && valB > 0 && result < 0) {
                 overflow = TRUE;
             }
-            if (valA < 0 && valB < 0 && result > 0) {
+            else if (valA < 0 && valB < 0 && result > 0) {
                 overflow = TRUE;
+            }
+            else {
+                overflow = FALSE;
             }
             bool zero;
             if (result == 0) {
@@ -175,12 +181,15 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
         if (ifun == AND) {
             wordType result = valA & valB;
             *valE = result;
-            bool overflow = FALSE;
+            bool overflow;
             if (valA > 0 && valB > 0 && result < 0) {
                 overflow = TRUE;
             }
-            if (valA < 0 && valB < 0 && result > 0) {
+            else if (valA < 0 && valB < 0 && result > 0) {
                 overflow = TRUE;
+            }
+            else {
+                overflow = FALSE;
             }
             bool zero;
             if (result == 0) {
@@ -201,12 +210,15 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
         if (ifun == XOR) {
             wordType result = valA ^ valB;
             *valE = result;
-            bool overflow = FALSE;
+            bool overflow;
             if (valA > 0 && valB > 0 && result < 0) {
                 overflow = TRUE;
             }
-            if (valA < 0 && valB < 0 && result > 0) {
+            else if (valA < 0 && valB < 0 && result > 0) {
                 overflow = TRUE;
+            }
+            else {
+                overflow = FALSE;
             }
             bool zero;
             if (result == 0) {
