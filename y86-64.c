@@ -121,44 +121,108 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
     }
     if (icode == OPQ) {
         if (ifun == ADD) {
-            wordType result = valA + valB;
+            wordType result = valB + valA;
             *valE = result;
             bool overflow = FALSE;
-            if (valA > 0 && valB > 0 && result < 0)
+            if (valA > 0 && valB > 0 && result < 0) {
                 overflow = TRUE;
-            if (valA < 0 && valB < 0 && result > 0)
+            }
+            if (valA < 0 && valB < 0 && result > 0) {
                 overflow = TRUE;
-            setFlags(result > 0, result == 0, overflow);
+            }
+            bool zero;
+            if (result == 0) {
+                zero = TRUE;
+            }
+            else {
+                zero = FALSE;
+            }
+            bool sign;
+            if (result < 0) {
+                sign = TRUE;
+            }
+            else {
+                sign = FALSE;
+            }
+            setFlags(sign, zero, overflow);
         }
         if (ifun == SUB) {
-            wordType result = valA - valB;
+            wordType result = valB - valA;
             *valE = result;
             bool overflow = FALSE;
-            if (valA > 0 && valB > 0 && result < 0)
+            if (valA > 0 && valB > 0 && result < 0) {
                 overflow = TRUE;
-            if (valA < 0 && valB < 0 && result > 0)
+            }
+            if (valA < 0 && valB < 0 && result > 0) {
                 overflow = TRUE;
-            setFlags(result > 0, result == 0, overflow);
+            }
+            bool zero;
+            if (result == 0) {
+                zero = TRUE;
+            }
+            else {
+                zero = FALSE;
+            }
+            bool sign;
+            if (result < 0) {
+                sign = TRUE;
+            }
+            else {
+                sign = FALSE;
+            }
+            setFlags(sign, zero, overflow);
         }
         if (ifun == AND) {
             wordType result = valA & valB;
             *valE = result;
             bool overflow = FALSE;
-            if (valA > 0 && valB > 0 && result < 0)
+            if (valA > 0 && valB > 0 && result < 0) {
                 overflow = TRUE;
-            if (valA < 0 && valB < 0 && result > 0)
+            }
+            if (valA < 0 && valB < 0 && result > 0) {
                 overflow = TRUE;
-            setFlags(result > 0, result == 0, overflow);
+            }
+            bool zero;
+            if (result == 0) {
+                zero = TRUE;
+            }
+            else {
+                zero = FALSE;
+            }
+            bool sign;
+            if (result < 0) {
+                sign = TRUE;
+            }
+            else {
+                sign = FALSE;
+            }
+            setFlags(sign, zero, overflow);
         }
         if (ifun == XOR) {
             wordType result = valA ^ valB;
             *valE = result;
             bool overflow = FALSE;
-            if (valA > 0 && valB > 0 && result < 0)
+            if (valA > 0 && valB > 0 && result < 0) {
                 overflow = TRUE;
-            if (valA < 0 && valB < 0 && result > 0)
+            }
+            if (valA < 0 && valB < 0 && result > 0) {
                 overflow = TRUE;
-            setFlags(result > 0, result == 0, overflow);
+            }
+            bool zero;
+            if (result == 0) {
+                zero = TRUE;
+            }
+            else {
+                zero = FALSE;
+            }
+            bool sign;
+            if (result < 0) {
+                sign = TRUE;
+            }
+            else {
+                sign = FALSE;
+            }
+            setFlags(sign, zero, overflow);
         }
     }
     if (icode == JXX) {
