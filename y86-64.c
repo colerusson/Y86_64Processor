@@ -9,7 +9,7 @@ void fetchStage(int *icode, int *ifun, int *rA, int *rB, wordType *valC, wordTyp
     wordType pcAddress = getPC();
     byteType firstByte = getByteFromMemory(pcAddress);
     *ifun = firstByte & 0x0f;
-    *icode = (firstByte & 0xf0) >> 4;
+    *icode = (firstByte >> 4) & 0xf;
     if (*icode == NOP) {
         *valP = pcAddress + 1;
     }
@@ -229,7 +229,7 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
         *Cnd = Cond(ifun);
     }
     if (icode == CALL) {
-        int negativeEight = -8; // TODO: make sure that this is how you do negative in C
+        int negativeEight = -8;
         *valE = valB + negativeEight;
     }
     if (icode == RET) {
@@ -325,10 +325,10 @@ void pcUpdateStage(int icode, wordType valC, wordType valP, bool Cnd, wordType v
         }
     }
     if (icode == CALL) {
-        setPC(valP);
+        setPC(valC);
     }
     if (icode == RET) {
-        setPC(valP);
+        setPC(valM);
     }
     if (icode == PUSHQ) {
         setPC(valP);
