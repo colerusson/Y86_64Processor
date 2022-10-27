@@ -5,19 +5,12 @@
 
 const int MAX_MEM_SIZE  = (1 << 13);
 
-static bool cmovCnd;
-bool get(void) {
-    return cmovCnd;
-}
-void set(bool val) {
-    cmovCnd = val;
-}
-
 void fetchStage(int *icode, int *ifun, int *rA, int *rB, wordType *valC, wordType *valP) {
-    wordType pcAddress = getPC();
+    wordType pcAddress = getPC();       // get the address of the PC
     byteType firstByte = getByteFromMemory(pcAddress);
-    *ifun = firstByte & 0x0f;
-    *icode = (firstByte >> 4) & 0xf;
+    *ifun = firstByte & 0x0f;       // set ifun to the first nibble
+    *icode = (firstByte >> 4) & 0xf;    // set icode to the second nibble
+    // set up each icode as needed
     if (*icode == NOP || *icode == HALT || *icode == RET) {
         *valP = pcAddress + 1;
     }
@@ -41,6 +34,7 @@ void fetchStage(int *icode, int *ifun, int *rA, int *rB, wordType *valC, wordTyp
 }
 
 void decodeStage(int icode, int rA, int rB, wordType *valA, wordType *valB) {
+    // set the values equal to register values as needed
     if (icode == RRMOVQ || icode == CMOVXX) {
         *valA = getRegister(rA);
     }
@@ -74,11 +68,11 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
     if (icode == RMMOVQ || icode == MRMOVQ) {
         *valE = valB + valC;
     }
-    if (icode == OPQ) {
+    if (icode == OPQ) {     // for opq, handle each type of operation
         if (ifun == ADD) {
             wordType result = valB + valA;
             *valE = result;
-            bool overflow;
+            bool overflow;  // overflow if both values are positive and result is negative or vise versa
             if (valA > 0 && valB > 0 && result <= 0) {
                 overflow = TRUE;
             }
@@ -93,7 +87,8 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
         if (ifun == SUB) {
             wordType result = valB - valA;
             *valE = result;
-            bool overflow;
+            bool overflow;      // overflow on subtraction if a is negative, b is positive, and result is negative
+                                // and vise versa
             if (valB > 0 && valA < 0 && result < 0) {
                 overflow = TRUE;
             }
@@ -103,7 +98,7 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
             else {
                 overflow = FALSE;
             }
-            setFlags(result < 0, result == 0, overflow);
+            setFlags(result < 0, result == 0, overflow);    // set the flags as needed
         }
         if (ifun == AND) {
             wordType result = valA & valB;
@@ -129,11 +124,11 @@ void executeStage(int icode, int ifun, wordType valA, wordType valB, wordType va
     if (icode == CMOVXX) {
         *valE = valA;
         *Cnd = Cond(ifun);
-        set(*Cnd);
     }
 }
 
 void memoryStage(int icode, wordType valA, wordType valP, wordType valE, wordType *valM) {
+    // set the memory or get values from memory as needed
     if (icode == RMMOVQ || icode == PUSHQ) {
         setWordInMemory(valE, valA);
     }
@@ -148,7 +143,8 @@ void memoryStage(int icode, wordType valA, wordType valP, wordType valE, wordTyp
     }
 }
 
-void writebackStage(int icode, int rA, int rB, wordType valE, wordType valM) {
+void writebackStage(int icode, int rA, int rB, wordType valE, wordType valM, bool Cnd) {
+    // set registers as needed
     if (icode == IRMOVQ || icode == RRMOVQ || icode == OPQ) {
         setRegister(rB, valE);
     }
@@ -163,13 +159,14 @@ void writebackStage(int icode, int rA, int rB, wordType valE, wordType valM) {
         setRegister(rA, valM);
     }
     if (icode == CMOVXX) {
-        if (get() == TRUE) {
+        if (Cnd == TRUE) {
             setRegister(rB, valE);
         }
     }
 }
 
 void pcUpdateStage(int icode, wordType valC, wordType valP, bool Cnd, wordType valM) {
+    // update the PC at the end based on the icode
     if (icode == HALT) {
         setStatus(STAT_HLT);
         setPC(valP);
@@ -223,7 +220,7 @@ void stepMachine(int stepMode) {
     memoryStage(icode, valA, valP, valE, &valM);
     applyStageStepMode(stepMode, "Memory", icode, ifun, rA, rB, valC, valP, valA, valB, valE, Cnd, valM);
 
-    writebackStage(icode, rA, rB, valE, valM);
+    writebackStage(icode, rA, rB, valE, valM, Cnd);
     applyStageStepMode(stepMode, "Writeback", icode, ifun, rA, rB, valC, valP, valA, valB, valE, Cnd, valM);
 
     pcUpdateStage(icode, valC, valP, Cnd, valM);
